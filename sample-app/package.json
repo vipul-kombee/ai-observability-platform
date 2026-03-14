@@ -3,8 +3,9 @@
  "version": "1.0.0",
  "dependencies": {
   "@opentelemetry/api": "^1.7.0",
+  "@opentelemetry/auto-instrumentations-node": "^0.71.0",
   "@opentelemetry/exporter-jaeger": "^2.6.0",
-  "@opentelemetry/sdk-node": "^0.45.0",
+  "@opentelemetry/sdk-node": "^0.45.1",
   "@opentelemetry/sdk-trace-base": "^2.6.0",
   "@opentelemetry/sdk-trace-node": "^2.6.0",
   "express": "^4.22.1",
