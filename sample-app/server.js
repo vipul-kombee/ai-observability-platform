@@ -1,37 +1,54 @@
-const express = require("express")
-require("./telemetry")
+const express = require("express");
+const promClient = require("prom-client");
 
-const app = express()
+const app = express();
+const port = 3001;
 
-app.get("/",(req,res)=>{
+/* -------------------------
+   PROMETHEUS METRICS
+------------------------- */
 
-res.send("Observability Demo Running")
+const register = new promClient.Registry();
+promClient.collectDefaultMetrics({ register });
 
-})
+const httpRequestsTotal = new promClient.Counter({
+  name: "http_requests_total",
+  help: "Total HTTP requests",
+  labelNames: ["method", "route", "status"]
+});
 
-app.get("/api",(req,res)=>{
+register.registerMetric(httpRequestsTotal);
 
-const delay = Math.random()*500
+/* -------------------------
+   API ENDPOINT
+------------------------- */
 
-setTimeout(()=>{
+app.get("/api", async (req, res) => {
 
-res.json({
-status:"success",
-delay:delay
-})
+  const delay = Math.random() * 500;
 
-},delay)
+  await new Promise(r => setTimeout(r, delay));
 
-})
+  httpRequestsTotal.labels("GET", "/api", "200").inc();
 
-app.get("/error",(req,res)=>{
+  console.log(`API request processed in ${delay} ms`);
 
-res.status(500).send("error")
+  res.json({
+    status: "success",
+    delay
+  });
 
-})
+});
 
-app.listen(3001,()=>{
+/* -------------------------
+   PROMETHEUS METRICS
+------------------------- */
 
-console.log("server running")
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", register.contentType);
+  res.end(await register.metrics());
+});
 
-}) 
+app.listen(port, () => {
+  console.log(`API running on port ${port}`);
+});

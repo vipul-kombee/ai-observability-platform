@@ -7,3 +7,23 @@ distributor:
       protocols:
         http:
         grpc:
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+
+compactor:
+  compaction:
+    block_retention: 1h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/tempo
+
+usage_report:
+  reporting_enabled: false
