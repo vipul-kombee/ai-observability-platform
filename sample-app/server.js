@@ -1,3 +1,4 @@
+require("./tracing");
 const express = require("express");
 const promClient = require("prom-client");
 
